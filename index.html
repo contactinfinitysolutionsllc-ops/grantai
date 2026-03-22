@@ -143,9 +143,9 @@ footer a{color:var(--accent2);text-decoration:none}
 <body>
 
 <nav>
-  <a href="https://contactinfinitysolutionsllc-ops.github.io/infinityhub/" class="logo">Infinity<em>.</em>Solutions</a>
+  <a href="https://infinityhub.dev" class="logo">Infinity<em>.</em>Solutions</a>
   <div class="nav-right">
-    <a href="https://contactinfinitysolutionsllc-ops.github.io/infinityhub/" class="nav-back">← Back to hub</a>
+    <a href="https://infinityhub.dev" class="nav-back">← Back to hub</a>
     <span class="nav-badge">GrantAI</span>
   </div>
 </nav>
@@ -457,7 +457,7 @@ footer a{color:var(--accent2);text-decoration:none}
 </div>
 
 <footer>
-  <p>© 2025 <a href="https://contactinfinitysolutionsllc-ops.github.io/infinityhub/">Infinity Solutions LLC</a> · All Rights Reserved</p>
+  <p>© 2025 <a href="https://infinityhub.dev">Infinity Solutions LLC</a> · All Rights Reserved</p>
 </footer>
 
 <style>
@@ -497,13 +497,18 @@ function toggleSec(btn){
 }
 
 // ── SUBSCRIPTION ─────────────────────────────────────────
+let _subCache = null;
 async function isSubscribed(){
   const email=localStorage.getItem('grant_email');
   if(!email) return false;
+  if(_subCache !== null) return _subCache;
   try{
     const r=await fetch(WORKER_URL,{method:'POST',headers:{'Content-Type':'application/json'},
       body:JSON.stringify({action:'checkSubscriber',email,app:APP_NAME})});
-    return (await r.json()).active===true;
+    const d=await r.json();
+    _subCache=d.active===true;
+    setTimeout(()=>{ _subCache=null; },5*60*1000);
+    return _subCache;
   }catch{return false;}
 }
 
@@ -518,6 +523,7 @@ async function checkSub(){
   if(data.active){
     localStorage.setItem('grant_email',email);
     subscribedUnlocked=true;
+    _subCache=true;
     document.getElementById('sub-bar').innerHTML='<span class="sub-bar-lbl" style="color:var(--accent)">✓ Subscribed as '+email+' — unlimited access unlocked.</span>';
   }else{alert('No active subscription found for that email.');}
   btn.textContent='Unlock';btn.disabled=false;
@@ -862,6 +868,7 @@ if(window.location.search.includes('paid=true')){
     }).then(()=>{
       localStorage.setItem('grant_email',email);
       subscribedUnlocked=true;
+      _subCache=true;
       localStorage.removeItem('grant_pending_email');
       localStorage.removeItem('grant_pending_type');
     });
@@ -872,6 +879,7 @@ if(window.location.search.includes('paid=true')){
 (async()=>{
   if(await isSubscribed()){
     subscribedUnlocked=true;
+    _subCache=true;
     const email=localStorage.getItem('grant_email');
     if(email) document.getElementById('sub-bar').innerHTML='<span class="sub-bar-lbl" style="color:var(--accent)">✓ Subscribed as '+email+' — unlimited access unlocked.</span>';
   }
