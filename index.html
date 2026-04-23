@@ -120,11 +120,14 @@ select.fi option{background:var(--bg2)}
 .pay-box h3{font-family:'Syne',sans-serif;font-size:1.1rem;font-weight:700;margin-bottom:.4rem}
 .pay-box p{font-size:.84rem;color:var(--muted2);margin-bottom:1.2rem;font-weight:300;line-height:1.6}
 .pay-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;max-width:520px;margin:0 auto 1rem}
-.pay-opt{background:var(--bg3);border:1px solid var(--border);border-radius:12px;padding:1rem;cursor:pointer;transition:all .18s;text-align:center}
+.pay-opt{background:var(--bg3);border:1px solid var(--border);border-radius:12px;padding:.85rem .7rem;cursor:pointer;transition:all .18s;text-align:center}
 .pay-opt:hover{border-color:var(--accent)}
-.pay-opt.featured{border-color:var(--accent);background:rgba(34,197,94,.06)}
-.pay-price{font-family:'Syne',sans-serif;font-size:1.1rem;font-weight:800;color:var(--accent)}
-.pay-label{font-size:.72rem;color:var(--muted2);margin-top:3px;line-height:1.3}
+.pay-opt.pw-annual{border-color:rgba(240,180,41,.45);background:rgba(240,180,41,.06)}
+.pay-opt.pw-monthly{border-color:rgba(34,197,94,.35)}
+.pay-opt.pw-session{opacity:.85}
+.pw-badge{font-size:.6rem;font-weight:700;text-transform:uppercase;letter-spacing:.06em;color:#f0b429;margin-bottom:.25rem}
+.pay-price{font-family:'Syne',sans-serif;font-size:1.05rem;font-weight:800;color:var(--accent)}
+.pay-label{font-size:.68rem;color:var(--muted2);margin-top:3px;line-height:1.3}
 .pay-email{width:100%;max-width:380px;margin:0 auto .8rem;display:block;padding:.65rem .9rem;background:var(--bg3);border:1px solid var(--border);border-radius:10px;font-family:'Instrument Sans',sans-serif;font-size:.9rem;color:var(--text);outline:none}
 .pay-email:focus{border-color:var(--accent)}
 
@@ -289,6 +292,7 @@ footer a{color:var(--accent2);text-decoration:none}
 
       <button class="btn btn-p" onclick="findGrants()">Find My Grants →</button>
     </div>
+    <div id="finder-error" style="display:none;margin-top:.8rem;padding:.7rem 1rem;background:rgba(255,107,107,.08);border:1px solid rgba(255,107,107,.25);border-radius:10px;font-size:.82rem;color:#ff6b6b;"></div>
 
     <div class="loading" id="finder-loading">
       <div class="spinner"></div>
@@ -300,26 +304,28 @@ footer a{color:var(--accent2);text-decoration:none}
       <div id="grants-list"></div>
       <div class="out-actions" style="margin-top:1rem">
         <button class="btn-copy" onclick="copyGrants(this)">📋 Copy all results</button>
+        <button class="btn-copy" onclick="downloadGrants()">⬇ Download .txt</button>
         <button class="btn-copy" onclick="resetFinder()">← New search</button>
       </div>
     </div>
 
     <div class="pay-box" id="finder-pay-box">
       <h3>Unlock your grant matches</h3>
-      <p>Pay for a single search or subscribe for unlimited searches and proposals.</p>
+      <p>One subscription covers <em>all</em> Infinity Hub tools — monthly or annual. Already subscribed? Enter your email to unlock.</p>
       <input type="email" class="pay-email" id="finder-pay-email" placeholder="Your email address">
+      <div id="finder-pay-error" style="display:none;margin:.4rem auto .6rem;max-width:380px;padding:.6rem .9rem;background:rgba(255,107,107,.08);border:1px solid rgba(255,107,107,.25);border-radius:10px;font-size:.82rem;color:#ff6b6b;text-align:left"></div>
       <div class="pay-grid">
-        <div class="pay-opt" onclick="handlePay('finder-single')">
-          <div class="pay-price">$2.99</div>
-          <div class="pay-label">Single search</div>
+        <div class="pay-opt pw-annual" onclick="handlePay('annual')">
+          <div class="pw-badge">Best Value</div><div class="pay-price">$99/yr</div>
+          <div class="pay-label">Annual · save 31%</div>
         </div>
-        <div class="pay-opt" onclick="handlePay('proposal-single')">
-          <div class="pay-price">$9.99</div>
-          <div class="pay-label">Single proposal</div>
+        <div class="pay-opt pw-monthly" onclick="handlePay('monthly')">
+          <div class="pay-price">$12/mo</div>
+          <div class="pay-label">Monthly</div>
         </div>
-        <div class="pay-opt featured" onclick="handlePay('monthly')">
-          <div class="pay-price">$24.99/mo</div>
-          <div class="pay-label">Unlimited everything</div>
+        <div class="pay-opt pw-session" onclick="handlePay('session')">
+          <div class="pay-price">$0.99</div>
+          <div class="pay-label">24-hr pass</div>
         </div>
       </div>
       <p style="font-size:.7rem;color:var(--muted)">Secured by Square · Cancel anytime</p>
@@ -416,6 +422,7 @@ footer a{color:var(--accent2);text-decoration:none}
 
       <button class="btn btn-p" onclick="writeProposal()">Generate Full Proposal →</button>
     </div>
+    <div id="writer-error" style="display:none;margin-top:.8rem;padding:.7rem 1rem;background:rgba(255,107,107,.08);border:1px solid rgba(255,107,107,.25);border-radius:10px;font-size:.82rem;color:#ff6b6b;"></div>
 
     <div class="loading" id="writer-loading">
       <div class="spinner"></div>
@@ -427,26 +434,28 @@ footer a{color:var(--accent2);text-decoration:none}
       <div id="output-panes"></div>
       <div class="out-actions" style="margin-top:.8rem">
         <button class="btn-copy" onclick="copyFullProposal(this)">📋 Copy full proposal</button>
+        <button class="btn-copy" onclick="downloadFullProposal()">⬇ Download full proposal</button>
         <button class="btn-copy" onclick="resetWriter()">← New proposal</button>
       </div>
     </div>
 
     <div class="pay-box" id="writer-pay-box">
       <h3>Unlock your grant proposal</h3>
-      <p>A single proposal costs less than 0.2% of the average grant award. Subscribe for unlimited.</p>
+      <p>One subscription covers <em>all</em> Infinity Hub tools — monthly or annual.</p>
       <input type="email" class="pay-email" id="writer-pay-email" placeholder="Your email address">
+      <div id="writer-pay-error" style="display:none;margin:.4rem auto .6rem;max-width:380px;padding:.6rem .9rem;background:rgba(255,107,107,.08);border:1px solid rgba(255,107,107,.25);border-radius:10px;font-size:.82rem;color:#ff6b6b;text-align:left"></div>
       <div class="pay-grid">
-        <div class="pay-opt" onclick="handlePay('finder-single')">
-          <div class="pay-price">$2.99</div>
-          <div class="pay-label">Single search</div>
+        <div class="pay-opt pw-annual" onclick="handlePay('annual')">
+          <div class="pw-badge">Best Value</div><div class="pay-price">$99/yr</div>
+          <div class="pay-label">Annual · save 31%</div>
         </div>
-        <div class="pay-opt" onclick="handlePay('proposal-single')">
-          <div class="pay-price">$9.99</div>
-          <div class="pay-label">Single proposal</div>
+        <div class="pay-opt pw-monthly" onclick="handlePay('monthly')">
+          <div class="pay-price">$12/mo</div>
+          <div class="pay-label">Monthly</div>
         </div>
-        <div class="pay-opt featured" onclick="handlePay('monthly')">
-          <div class="pay-price">$24.99/mo</div>
-          <div class="pay-label">Unlimited everything</div>
+        <div class="pay-opt pw-session" onclick="handlePay('session')">
+          <div class="pay-price">$0.99</div>
+          <div class="pay-label">24-hr pass</div>
         </div>
       </div>
       <p style="font-size:.7rem;color:var(--muted)">Secured by Square · Cancel anytime</p>
@@ -474,7 +483,10 @@ footer a{color:var(--accent2);text-decoration:none}
 
 <script>
 const WORKER_URL = 'https://justdocs-worker.robertjosephreynolds.workers.dev';
-const APP_NAME   = 'grantai';
+const APP_NAME          = 'grantai';
+const APP_URL           = 'https://contactinfinitysolutionsllc-ops.github.io/grantai/';
+const SQUARE_MONTHLY_URL = 'https://square.link/u/pCpKBYg8'; // replace with Square monthly plan link once created
+const SQUARE_ANNUAL_URL  = 'https://square.link/u/zRrTqrz3'; // replace with Square annual plan link once created
 let subscribedUnlocked = false;
 let selectedSections   = new Set(['executive_summary','statement_of_need','project_description','goals_objectives','evaluation_plan','budget_narrative','organizational_capacity']);
 let lastGrants  = '';
@@ -506,15 +518,23 @@ function toggleSec(btn){
 let _subCache = null;
 // isSubscribed → see getStoredSession() below
 
+// ── INLINE ERRORS ────────────────────────────────────────
+function showFinderErr(msg){ const e=document.getElementById('finder-error'); if(e){e.textContent=msg;e.style.display='block';} }
+function clearFinderErr(){ const e=document.getElementById('finder-error'); if(e) e.style.display='none'; }
+function showWriterErr(msg){ const e=document.getElementById('writer-error'); if(e){e.textContent=msg;e.style.display='block';} }
+function clearWriterErr(){ const e=document.getElementById('writer-error'); if(e) e.style.display='none'; }
+function showPayErr(id,msg){ const e=document.getElementById(id); if(e){e.textContent=msg;e.style.display='block';} }
+function clearPayErr(id){ const e=document.getElementById(id); if(e) e.style.display='none'; }
 
 // ── GRANT FINDER ─────────────────────────────────────────
 async function findGrants(){
+  clearFinderErr();
   const orgtype=document.getElementById('f-orgtype').value;
   const state=document.getElementById('f-state').value.trim();
   const focus=document.getElementById('f-focus').value;
   const orgdesc=document.getElementById('f-orgdesc').value.trim();
   const need=document.getElementById('f-need').value.trim();
-  if(!state||!orgdesc||!need){alert('Please fill in your location, organization description, and funding need.');return;}
+  if(!state||!orgdesc||!need){showFinderErr('Please fill in your location, organization description, and funding need.');return;}
 
   const sub=subscribedUnlocked||await isSubscribed();
   if(!sub){
@@ -574,11 +594,14 @@ After the list, provide a STRATEGY section with 3-5 tips specific to this organi
 
   try{
     const r=await fetch(WORKER_URL,{method:'POST',headers:{'Content-Type':'application/json'},
-      body:JSON.stringify({action:'claude',prompt})});
+      body:JSON.stringify({action:'claude',prompt,email:getStoredSession()?.email||localStorage.getItem('ig_account_email')||''})});
     const data=await r.json();
-    lastGrants=data.result||'';
+    if(!data.result) throw new Error('Empty response');
+    lastGrants=data.result;
     parseAndShowGrants(lastGrants);
-  }catch{alert('Error finding grants. Please try again.');}
+  }catch{
+    showFinderErr('Error finding grants. Please check your connection and try again.');
+  }
 
   document.getElementById('finder-loading').style.display='none';
   document.querySelector('#panel-finder .btn-p').disabled=false;
@@ -650,10 +673,19 @@ function prefillWriter(grantName,funder){
 }
 
 function copyGrants(btn){
+  const orig=btn.textContent;
   navigator.clipboard.writeText(lastGrants).then(()=>{
     btn.textContent='✓ Copied!';btn.classList.add('ok');
-    setTimeout(()=>{btn.textContent='📋 Copy all results';btn.classList.remove('ok');},2000);
+    setTimeout(()=>{btn.textContent=orig;btn.classList.remove('ok');},2000);
   });
+}
+function downloadGrants(){
+  if(!lastGrants) return;
+  const date=new Date().toISOString().slice(0,10);
+  const a=document.createElement('a');
+  a.href='data:text/plain;charset=utf-8,'+encodeURIComponent(lastGrants);
+  a.download='grant-results-'+date+'.txt';
+  a.click();
 }
 
 function resetFinder(){
@@ -664,11 +696,12 @@ function resetFinder(){
 
 // ── PROPOSAL WRITER ───────────────────────────────────────
 async function writeProposal(){
+  clearWriterErr();
   const orgname=document.getElementById('w-orgname').value.trim();
   const orgdesc=document.getElementById('w-orgdesc').value.trim();
   const project=document.getElementById('w-project').value.trim();
   const need=document.getElementById('w-need').value.trim();
-  if(!orgname||!orgdesc||!project||!need){alert('Please fill in your organization name, description, project details, and statement of need.');return;}
+  if(!orgname||!orgdesc||!project||!need){showWriterErr('Please fill in your organization name, description, project details, and statement of need.');return;}
 
   const sub=subscribedUnlocked||await isSubscribed();
   if(!sub){
@@ -739,11 +772,13 @@ Write as if this were going to be submitted to a major foundation. Make it compe
 
   try{
     const r=await fetch(WORKER_URL,{method:'POST',headers:{'Content-Type':'application/json'},
-      body:JSON.stringify({action:'claude',prompt,max_tokens:2000})});
+      body:JSON.stringify({action:'claude',prompt,max_tokens:2000,email:getStoredSession()?.email||localStorage.getItem('ig_account_email')||''})});
     const data=await r.json();
-    const raw=data.result||'';
-    parseAndShowProposal(raw);
-  }catch{alert('Error generating proposal. Please try again.');}
+    if(!data.result) throw new Error('Empty response');
+    parseAndShowProposal(data.result);
+  }catch{
+    showWriterErr('Error generating proposal. Please check your connection and try again.');
+  }
 
   document.getElementById('writer-loading').style.display='none';
   document.querySelector('#panel-writer .btn-p').disabled=false;
@@ -764,17 +799,30 @@ function parseAndShowProposal(raw){
     organizational_capacity:'Org Capacity'
   };
 
+  // indexOf-based extraction (robust against AI formatting variations)
+  const rawU=raw.toUpperCase();
+  const activeSecs=Array.from(selectedSections);
+  const allLabels=activeSecs.map(s=>secLabels[s]+':');
+
+  activeSecs.forEach(sec=>{
+    const label=secLabels[sec]+':';
+    const start=rawU.indexOf(label);
+    if(start===-1){ lastResults[sec]=raw; return; }
+    const contentStart=start+label.length;
+    let end=raw.length;
+    allLabels.forEach(l=>{
+      if(l===label) return;
+      const pos=rawU.indexOf(l,contentStart);
+      if(pos!==-1 && pos<end) end=pos;
+    });
+    lastResults[sec]=raw.slice(contentStart,end).replace(/^[\s\n]+/,'').trimEnd();
+  });
+
   const tabs=document.getElementById('output-tabs');
   const panes=document.getElementById('output-panes');
   tabs.innerHTML=''; panes.innerHTML='';
 
-  const activeSecs=Array.from(selectedSections);
   activeSecs.forEach((sec,i)=>{
-    const label=secLabels[sec];
-    const regex=new RegExp(label+':\\s*([\\s\\S]*?)(?=\\n[A-Z ]{5,}:|$)','i');
-    const match=raw.match(regex);
-    lastResults[sec]=match?match[1].trim():raw;
-
     const tab=document.createElement('button');
     tab.className='out-tab'+(i===0?' active':'');
     tab.textContent=secNames[sec];
@@ -790,7 +838,10 @@ function parseAndShowProposal(raw){
     pane.className='out-pane'+(i===0?' active':'');
     pane.id='pane-'+sec;
     pane.innerHTML=`<div class="output-box">${(lastResults[sec]||'').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/\n/g,'<br>')}</div>
-      <div class="out-actions"><button class="btn-copy" onclick="copySection('${sec}',this)">📋 Copy section</button></div>`;
+      <div class="out-actions">
+        <button class="btn-copy" onclick="copySection('${sec}',this)">📋 Copy section</button>
+        <button class="btn-copy" onclick="downloadSection('${sec}','${secNames[sec]}')">⬇ Download</button>
+      </div>`;
     panes.appendChild(pane);
   });
 
@@ -799,18 +850,37 @@ function parseAndShowProposal(raw){
 }
 
 function copySection(sec,btn){
+  const orig=btn.textContent;
   navigator.clipboard.writeText(lastResults[sec]||'').then(()=>{
     btn.textContent='✓ Copied!';btn.classList.add('ok');
-    setTimeout(()=>{btn.textContent='📋 Copy section';btn.classList.remove('ok');},2000);
+    setTimeout(()=>{btn.textContent=orig;btn.classList.remove('ok');},2000);
   });
 }
-
+function downloadSection(sec,label){
+  const text=lastResults[sec]||'';
+  if(!text) return;
+  const date=new Date().toISOString().slice(0,10);
+  const a=document.createElement('a');
+  a.href='data:text/plain;charset=utf-8,'+encodeURIComponent(text);
+  a.download='grant-'+label.toLowerCase().replace(/\s+/g,'-')+'-'+date+'.txt';
+  a.click();
+}
 function copyFullProposal(btn){
   const full=Object.values(lastResults).join('\n\n---\n\n');
+  const orig=btn.textContent;
   navigator.clipboard.writeText(full).then(()=>{
     btn.textContent='✓ Copied!';btn.classList.add('ok');
-    setTimeout(()=>{btn.textContent='📋 Copy full proposal';btn.classList.remove('ok');},2000);
+    setTimeout(()=>{btn.textContent=orig;btn.classList.remove('ok');},2000);
   });
+}
+function downloadFullProposal(){
+  const full=Object.values(lastResults).join('\n\n---\n\n');
+  if(!full.trim()) return;
+  const date=new Date().toISOString().slice(0,10);
+  const a=document.createElement('a');
+  a.href='data:text/plain;charset=utf-8,'+encodeURIComponent(full);
+  a.download='grant-proposal-'+date+'.txt';
+  a.click();
 }
 
 function resetWriter(){
@@ -820,35 +890,47 @@ function resetWriter(){
 }
 
 // ── PAYMENT ──────────────────────────────────────────────
-async function handlePay(type){
-  const emailEl=document.getElementById(currentTool==='finder'?'finder-pay-email':'writer-pay-email');
+async function handlePay(plan){
+  const isFinder=currentTool==='finder';
+  const errId=isFinder?'finder-pay-error':'writer-pay-error';
+  clearPayErr(errId);
+  const emailEl=document.getElementById(isFinder?'finder-pay-email':'writer-pay-email');
   const email=emailEl.value.trim();
-  if(!email||!email.includes('@')){alert('Please enter your email first.');return;}
+  if(!email||!email.includes('@')){
+    emailEl.style.border='1.5px solid #ff6b6b';
+    setTimeout(()=>emailEl.style.border='',2000);
+    showPayErr(errId,'Please enter your email address first.');
+    return;
+  }
   localStorage.setItem('grant_pending_email',email);
-  localStorage.setItem('grant_pending_type',type);
-  const amounts={'finder-single':2.99,'proposal-single':9.99,'monthly':24.99};
-  const labels={'finder-single':'GrantAI – Single Search','proposal-single':'GrantAI – Single Proposal','monthly':'GrantAI – Monthly Unlimited'};
-  const amount=amounts[type]||9.99;
-  const label=labels[type]||'GrantAI';
-  const r=await fetch(WORKER_URL,{method:'POST',headers:{'Content-Type':'application/json'},
-    body:JSON.stringify({action:'createPaymentLink',docType:label,amount,
-      redirectUrl:'https://contactinfinitysolutionsllc-ops.github.io/grantai/?paid=true'})});
-  const data=await r.json();
-  if(data.url) window.location.href=data.url;
-  else alert('Could not create payment link. Please try again.');
+  localStorage.setItem('grant_pending_plan',plan);
+  if(plan==='annual'&&SQUARE_ANNUAL_URL){window.location.href=SQUARE_ANNUAL_URL;return;}
+  if(plan==='monthly'&&SQUARE_MONTHLY_URL){window.location.href=SQUARE_MONTHLY_URL;return;}
+  const amounts={annual:99,monthly:12,session:0.99};
+  const labels={annual:'Infinity Hub – Annual',monthly:'Infinity Hub – Monthly',session:'Infinity Hub – Session Pass'};
+  try{
+    const r=await fetch(WORKER_URL,{method:'POST',headers:{'Content-Type':'application/json'},
+      body:JSON.stringify({action:'createPaymentLink',docType:labels[plan],amount:amounts[plan],
+        redirectUrl:APP_URL+'?paid=true&plan='+plan})});
+    const data=await r.json();
+    if(data.url) window.location.href=data.url;
+    else showPayErr(errId,'Could not create payment link. Please try again.');
+  }catch{ showPayErr(errId,'Payment error. Please try again.'); }
 }
 
 if(window.location.search.includes('paid=true')){
-  const email=localStorage.getItem('ig_account_email');
+  const email=localStorage.getItem('grant_pending_email');
+  const plan=new URLSearchParams(window.location.search).get('plan')
+            ||localStorage.getItem('grant_pending_plan')||'monthly';
   if(email){
     fetch(WORKER_URL,{method:'POST',headers:{'Content-Type':'application/json'},
-      body:JSON.stringify({action:'addSubscriber',email,app:APP_NAME})
+      body:JSON.stringify({action:'addSubscriber',email,app:APP_NAME,plan})
     }).then(()=>{
       localStorage.setItem('grant_email',email);
       subscribedUnlocked=true;
       _subCache=true;
       localStorage.removeItem('grant_pending_email');
-      localStorage.removeItem('grant_pending_type');
+      localStorage.removeItem('grant_pending_plan');
     });
   }
   window.history.replaceState({},'',window.location.pathname);
@@ -954,6 +1036,5 @@ async function isSubscribed() {
   }
 })();
 </script>
-<script src="https://contactinfinitysolutionsllc-ops.github.io/account/ig-account.js"></script>
 </body>
 </html>
